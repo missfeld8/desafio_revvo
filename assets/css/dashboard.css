@@ -1,0 +1,127 @@
+:root {
+    --primary-color: #203024;
+    --bg-color: #f8f9fa;
+    --text-color: #333;
+    --btn-bg: #5c5e5c;
+    --btn-hover: #218838;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: var(--bg-color);
+    color: var(--text-color);
+}
+
+/* Header */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #0d0e0d;
+    color: white;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.search-bar {
+    padding: 5px;
+    margin-left: 30%;
+    margin-right: 8%;
+    width: 30%;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+}
+
+.user-info span {
+    margin-right: 10px;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.btn-logout {
+    background-color: #dc3545;
+    color: white;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    margin-left: 10px;
+}
+
+.btn-logout:hover {
+    background-color: #c82333;
+}
+
+/* Estilos para a lista de cursos */
+.courses {
+    padding: 20px;
+    text-align: center;
+}
+
+.courses h2 {
+    margin-bottom: 20px;
+}
+
+.courses-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.course-card {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    text-align: center;
+}
+
+.course-card img {
+    max-width: 100%;
+    border-radius: 10px;
+}
+
+.course-card .image {
+    width: 60%;
+    height: auto;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+
+#addCourseButton {
+
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+
+}
+
+#addCourseButton:hover {
+    background-color: var(--btn-hover);
+}

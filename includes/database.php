@@ -3,7 +3,7 @@
 $host = 'localhost';
 $dbname = 'teste_revvo';
 $user = 'root';
-$password = 'Mm@#91284025';
+$password = '';
 
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $user, $password);
