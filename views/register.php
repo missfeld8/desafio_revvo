@@ -1,5 +1,5 @@
 <?php
-require '../includes/database.php';
+require '../models/database.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = $_POST['name'];

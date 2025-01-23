@@ -73,6 +73,12 @@ body {
     background-color: #c82333;
 }
 
+.btn-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 /* Estilos para a lista de cursos */
 .courses {
     padding: 20px;
@@ -85,6 +91,7 @@ body {
 
 .courses-grid {
     display: grid;
+    text-align: center;
     grid-template-columns: repeat(3, 1fr);
     gap: 20px;
 }
@@ -109,9 +116,7 @@ body {
     object-fit: cover;
 }
 
-
 #addCourseButton {
-
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 20px;
@@ -119,7 +124,6 @@ body {
     color: white;
     border-radius: 5px;
     cursor: pointer;
-
 }
 
 #addCourseButton:hover {
@@ -136,7 +140,113 @@ body {
 }
 
 .slick-slide img {
-    width: 100%;
-    border-radius: 10px;
+    width: 100%;          
+    height: 200px;         
+    object-fit: cover;     
+    border-radius: 10px;   
 }
 
+.slick-prev, .slick-next {
+    background-color: black;
+    color: white;
+    border-radius: 50%;
+    padding: 5px;
+}
+
+.slick-prev:hover, .slick-next:hover {
+    background-color: #555;
+}
+
+/* Adições para centralizar "Meus Cursos" e Lottie */
+.meus-cursos {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.lottie-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.lottie-container p {
+    margin-top: 15px;
+    font-size: 16px;
+    color: var(--text-color);
+}
+
+/* Adições para centralizar texto e Lottie */
+.text-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 200px); /* Ajustar para ocupar toda a altura da viewport menos o header */
+    text-align: center; /* Alinhar o texto ao centro */
+}
+
+/* Media query para telas menores que 768px */
+@media (max-width: 768px) {
+    .slick-slider {
+        padding: 0 10px;
+    }
+
+    .slick-slide img {
+        width: 100%;         
+        height: auto;        
+        object-fit: contain; 
+    }
+
+    .slick-prev, .slick-next {
+        padding: 5px;
+        font-size: 14px;
+    }
+}
+
+/* Media query para telas menores que 480px */
+@media (max-width: 480px) {
+    .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 10px;
+    }
+
+    .search-bar {
+        margin: 10px 0;
+        width: 100%;
+    }
+
+    .user-info {
+        flex-direction: column;
+        align-items: flex-start;
+        margin-top: 10px;
+    }
+
+    .btn-logout {
+        margin-left: 0;
+    }
+
+    .slick-slider {
+        padding: 0 10px;
+    }
+
+    .slick-slide img {
+        width: 100%;         
+        height: auto;        
+        object-fit: contain; 
+    }
+
+    .slick-prev, .slick-next {
+        padding: 5px;
+        font-size: 14px;
+    }
+
+    .courses-grid {
+        grid-template-columns: 1fr; 
+        gap: 10px; 
+    }
+
+    .course-card {
+        padding: 10px;
+    }
+}

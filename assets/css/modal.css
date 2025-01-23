@@ -161,3 +161,25 @@ input[type="text"]:focus, textarea:focus {
     color: #999;
     font-size: 14px;
 }
+
+.admin-options {
+    margin-top: 15px;
+    text-align: right;
+}
+
+.btn-edit-course,
+.btn-delete-course {
+    padding: 8px 12px;
+    font-size: 14px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn-edit-course:hover {
+    background: #ffbf47;
+}
+
+.btn-delete-course:hover {
+    background: #e02d2d;
+}

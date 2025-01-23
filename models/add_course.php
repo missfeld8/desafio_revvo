@@ -11,8 +11,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $uploadsDir = '../uploads/';
         $imagePath = $uploadsDir . basename($image['name']);
         if (move_uploaded_file($image['tmp_name'], $imagePath)) {
-            $stmt = $pdo->prepare("INSERT INTO courses (title, description, image) VALUES (?, ?, ?)");
-            $stmt->execute([$title, $description, $imagePath]);
+            $stmt = $pdo->prepare("INSERT INTO courses (title, description, image, created_at, deleted_at) VALUES (:title, :description, :image, NOW(), NULL)");
+            $stmt->execute([
+                'title' => $_POST['title'],
+                'description' => $_POST['description'],
+                'image' => $imagePath, 
+            ]);
 
             header('Location: dashboard.php');
             exit;
