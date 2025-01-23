@@ -1,13 +1,14 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Teste Revvo</title>
-    <link rel="stylesheet" href="assets/css/style.css">
-</head>
-<body>
-    <h1>Bem-vindo ao Teste Revvo!</h1>
-    <p>Acesse a <a href="views/login.php">página de login</a> para começar.</p>
-</body>
-</html>
+<?php
+// index.php (Redirecionamento baseado no login)
+session_start();
+
+if (isset($_SESSION['user_id'])) {
+    // Se o usuário estiver logado, redireciona para a dashboard
+    header('Location: views/dashboard.php');
+    exit;
+} else {
+    // Caso contrário, redireciona para a página de login
+    header('Location: views/login.php');
+    exit;
+}
+?>

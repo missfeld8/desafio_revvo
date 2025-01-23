@@ -1,0 +1,163 @@
+/* Estilos para a sobreposição do modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;  
+    justify-content: center;
+    align-items: center;
+    z-index: 999; 
+}
+
+.modal-overlay.hidden {
+    display: none; 
+}
+
+/* Estilos para o modal */
+.modal {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 50%; 
+    max-width: 90%;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    margin: 0;
+}
+
+.modal .close-modal-btn {
+    background-color: transparent;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.btn {
+    background-color: #203024;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background-color: #218838;
+}
+
+.add-course-card {
+    background-color: #5c5e5c;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.add-course-card:hover {
+    background-color: #218838;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+input[type="text"], textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+input[type="text"]:focus, textarea:focus {
+    border-color: #218838;
+}
+
+
+.file-input-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.file-input-container input[type="file"] {
+    display: none;
+}
+
+.custom-file-btn {
+    background-color: #203024;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    text-align: center;
+}
+
+.custom-file-btn:hover {
+    background-color: #218838;
+}
+
+
+.image-preview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 2px dashed #ccc;
+    border-radius: 10px;
+    padding: 15px;
+    text-align: center;
+    margin-bottom: 15px;
+    height: 150px;
+    width: 100%;
+    box-sizing: border-box;
+    background-color: #f9f9f9;
+}
+
+.image-preview img {
+    max-width: 100%;
+    max-height: 100%;
+    display: block;
+    border-radius: 10px;
+}
+
+.image-preview .hidden {
+    display: none;
+}
+
+.image-preview-text {
+    color: #999;
+    font-size: 14px;
+}
