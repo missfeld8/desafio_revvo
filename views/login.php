@@ -1,7 +1,6 @@
 <?php
-require '../includes/session.php';
-require '../includes/database.php'; 
-
+require '../models/session.php';
+require '../models/database.php'; 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = $_POST['username'];
@@ -11,8 +10,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->execute(['username' => $username]);
     $user = $stmt->fetch();
 
-    print_r($user);
-
     // Verificar se o usuário existe e se a senha está correta
     if ($user) {
         if (password_verify($password, $user['password'])) {
@@ -21,20 +18,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['name'] = $user['name'];
             $_SESSION['role'] = $user['role']; 
             $_SESSION['avatar'] = $user['avatar']; 
-        header('Location: dashboard.php');
-        exit;
- 
-            header('Location: dashboard.php'); 
+            header('Location: dashboard.php');
             exit;
         } else {
             $error = 'Usuário ou senha inválidos!';
         }
     } else {
-        // Usuário não encontrado
         $error = 'Usuário não encontrado!';
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -54,6 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <input type="password" name="password" placeholder="Senha" required>
             <button type="submit" class="btn">Entrar</button>
         </form>
+        <p>Não tem uma conta? <a href="register.php">Registre-se</a></p>
     </section>
 </body>
 </html>
