@@ -125,3 +125,18 @@ body {
 #addCourseButton:hover {
     background-color: var(--btn-hover);
 }
+
+.slick-slider {
+    width: 100%;
+    margin: 0 auto;
+}
+
+.slick-slide {
+    padding: 10px;
+}
+
+.slick-slide img {
+    width: 100%;
+    border-radius: 10px;
+}
+

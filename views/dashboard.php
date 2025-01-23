@@ -1,103 +1,84 @@
-<?php 
-require '../includes/session.php';
-require '../includes/database.php';
-checkLogin(); 
+<?php
+// Incluindo o arquivo de configuração e as classes necessárias
+require_once 'config.php';
+require_once 'models/User.php';
+require_once 'models/Course.php';
+require_once 'controllers/DashboardController.php';
 
-// Verificar se o usuário tem permissão de administrador
-$isAdmin = $_SESSION['role'] === 'admin';
+// Iniciando a sessão e verificando se o usuário está logado
+session_start();
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
+}
 
-$stmt = $pdo->query("SELECT * FROM courses");
-$courses = $stmt->fetchAll();
+// Criando uma instância do controller da dashboard
+$dashboardController = new DashboardController();
+$dashboardController->handleRequest();
+
+// Atribuindo as variáveis para visualização
+$user = $_SESSION['user'];
+$courses = $dashboardController->getCourses();
 ?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-    <link rel="stylesheet" href="../assets/css/dashboard.css">
-    <link rel="stylesheet" href="../assets/css/modal.css">
+    <title>Dashboard - Desafio Revvo</title>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
-<?php include '../includes/header.php'; ?>
 <body>
-<section class="courses">
-    <h2>Cursos</h2>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="dashboard.php">Dashboard</a></li>
+                <li><a href="courses.php">Cursos</a></li>
+                <li><a href="logout.php">Sair</a></li>
+            </ul>
+        </nav>
+    </header>
 
-    <div class="courses-grid">
-        <!-- Mostra os cursos existentes -->
-        <?php foreach ($courses as $course): ?>
-            <div class="course-card">
-                <img src="<?= $course['image']; ?>" alt="Imagem do Curso" class="image">
-                <h3><?= $course['title']; ?></h3>
-                <p><?= strlen($course['description']) > 20 ? substr($course['description'], 0, 20) . '...' : $course['description']; ?></p>
-                <button class="btn btn-open-view-course" 
-                            data-course-id="<?= $course['id']; ?>"
-                            data-course-title="<?= $course['title']; ?>"
-                            data-course-description="<?= $course['description']; ?>"
-                            data-course-image="<?= $course['image']; ?>">
-                        Ver Curso
-                </button>
-
-            </div>
-        <?php endforeach; ?>
+    <main>
+        <h1>Bem-vindo, <?php echo htmlspecialchars($user['name']); ?></h1>
         
-        <!-- Adicionar curso -->
-        <div class="add-course-card">
-            <h3>Adicionar Novo Curso</h3>
-            <button class="btn btn-open-add-course">Adicionar</button>
-        </div>
-    </div>
-</section>
+        <!-- Modal que aparece uma vez após o login -->
+        <?php if (!isset($_SESSION['modal_shown'])): ?>
+            <div id="modal" class="modal">
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+                    <p>Bem-vindo à sua dashboard! Aproveite a plataforma.</p>
+                </div>
+            </div>
+            <?php $_SESSION['modal_shown'] = true; ?>
+        <?php endif; ?>
 
-<!-- Modal de visualização do curso -->
-<div id="viewCourseModalOverlay" class="modal-overlay hidden">
-    <div class="modal">
-        <div class="modal-header">
-            <h3 id="courseTitle"></h3>
-            <button class="close-modal-btn">X</button>
-        </div>
-        <div class="modal-body">
-            <img id="courseImage" src="" alt="Imagem do Curso" style="width: 100%; border-radius: 10px; margin-bottom: 15px;">
-            <div id="courseDescription" style="max-height: 400px; overflow-y: auto; padding-right: 15px;"></div> <
-            <button class="btn">Inscreva-se</button>
-        </div>
-    </div>
-</div>
+        <!-- Exibindo cursos -->
+        <section class="courses">
+            <h2>Cursos Disponíveis</h2>
+            <ul>
+                <?php foreach ($courses as $course): ?>
+                    <li>
+                        <a href="course_details.php?id=<?php echo $course['id']; ?>"><?php echo htmlspecialchars($course['name']); ?></a>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        </section>
 
-<!-- Modal de adicionar curso -->
-<div id="addCourseModalOverlay" class="modal-overlay hidden">
-    <div class="modal">
-        <div class="modal-header">
-            <h3>Adicionar Novo Curso</h3>
-            <button class="close-modal-btn">X</button>
-        </div>
-        <div class="modal-body">
-            <form action="add_course.php" method="POST" enctype="multipart/form-data">
-                <label for="title">Título do Curso</label>
-                <input type="text" name="title" id="title" required>
+        <!-- Admin Section -->
+        <?php if ($user['role'] == 'admin'): ?>
+            <section class="admin">
+                <h2>Área Administrativa</h2>
+                <a href="add_course.php" class="btn">Adicionar Curso</a>
+            </section>
+        <?php endif; ?>
+    </main>
 
-                <label for="description">Descrição do Curso</label>
-                <textarea name="description" id="description" required></textarea>
+    <footer>
+        <p>&copy; 2025 Desafio Revvo</p>
+    </footer>
 
-                <label for="image">Imagem do Curso</label>
-                    <div class="file-input-container">
-                        <input type="file" name="image" id="image" accept="image/*" required>
-                        <span class="custom-file-btn" onclick="document.getElementById('image').click()">Clique aqui para adicionar imagem</span>
-                    </div>
-                    <div class="image-preview">
-                        <img src="" alt="Pré-visualização da imagem" style="display: none;">
-                        <span class="preview-text">Nenhuma imagem selecionada</span>
-                    </div>
-
-                <button type="submit" class="btn">Adicionar Curso</button>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- Scripts -->
-<script src="../assets/js/modal.js"></script>
-<script src="../assets/js/main.js"></script>
-
+    <script src="js/scripts.js"></script>
 </body>
 </html>
