@@ -28,6 +28,10 @@ if (isset($_SESSION['user_id'])) {
     $myCourses = $stmtMyCourses->fetchAll();
 }
 
+$stmt = $pdo->prepare("SELECT * FROM courses WHERE deleted_at IS NULL ORDER BY created_at DESC LIMIT 1");
+$stmt->execute();
+$lastCourse = $stmt->fetch();
+
 ?>
 
 <!DOCTYPE html>
@@ -136,45 +140,32 @@ if (isset($_SESSION['user_id'])) {
     <?php endif; ?>
 
 
-            <!-- Modal de visualização do curso -->
-        <div id="viewCourseModalOverlay" class="modal-overlay hidden">
-            <div class="modal">
-                <div class="modal-header">
-                    <h3 id="courseTitle"></h3>
-                    <button class="close-modal-btn">X</button>
-                </div>
-                <div class="modal-body">
-                    <img id="courseImage" src="" alt="Imagem do Curso" style="width: 100%; border-radius: 10px; margin-bottom: 15px;">
-                    <div id="courseDescription" style="max-height: 400px; overflow-y: auto; padding-right: 15px;"></div>
-                    
-                    <!-- Botão Inscrever-se/Desinscrever-se -->
-                    <div class="btn-center">
-                        <?php 
-                        $isSubscribed = false;
-                        if (isset($_SESSION['user_id'])) {
-                            $userId = $_SESSION['user_id'];
-                            $stmtCheckSubscription = $pdo->prepare("SELECT * FROM my_courses WHERE course_id = :course_id AND user_id = :user_id");
-                            $stmtCheckSubscription->execute(['course_id' => $course['id'], 'user_id' => $userId]);
-                            $isSubscribed = $stmtCheckSubscription->fetch() !== false;
-                        }
-                        ?>
-                        <?php if ($isSubscribed): ?>
-                            <button id="subscribeButton" class="btn" data-course-id="<?= htmlspecialchars($course['id']); ?>" data-subscribed="true">Desinscrever-se</button>
-                        <?php else: ?>
-                            <button id="subscribeButton" class="btn" data-course-id="<?= htmlspecialchars($course['id']); ?>" data-subscribed="false">Inscrever-se</button>
-                        <?php endif; ?>
-                    </div>
+            
 
-                    <!-- Funcionalidades de admin -->
-                    <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
-                        <div class="admin-options">
-                            <button id="editCourseButton" class="btn btn-edit-course" data-course-id="<?= htmlspecialchars($course['id']); ?>" style="background: #ffa500;">Editar</button>
-                            <button id="deleteCourseButton" class="btn btn-delete-course hidden" data-course-id="<?= htmlspecialchars($course['id']); ?>" style="background: #dc3545;">Excluir</button>
-                        </div>
-                    <?php endif; ?>
-                </div>
-            </div>
+        <!-- Modal de visualização do curso -->
+<div id="viewCourseModalOverlay" class="modal-overlay hidden">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 id="courseTitle"></h3>
+            <button class="close-modal-btn">X</button>
         </div>
+        <div class="modal-body">
+            <img id="courseImage" src="" alt="Imagem do Curso" style="width: 100%; border-radius: 10px; margin-bottom: 15px;">
+            <div id="courseDescription" style="max-height: 400px; overflow-y: auto; padding-right: 15px;"></div>
+            
+            <div class="btn-center">
+                <button id="subscribeButton" class="btn btn-subscribe" data-course-id="<?= htmlspecialchars($course['id']); ?>" data-subscribed="false">Inscrever-se</button>
+            </div>
+
+            <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+                <div class="admin-options">
+                        <button id="editCourseButton" class="btn btn-edit-course" data-course-id="<?= htmlspecialchars($course['id']); ?>" style="background: #ffa500;">Editar</button>
+                        <button id="deleteCourseButton" class="btn btn-delete-course hidden" data-course-id="<?= htmlspecialchars($course['id']); ?>" style="background: #dc3545;">Excluir</button>
+                </div>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>
 
         <!-- Modal de adicionar curso -->
         <div id="addCourseModalOverlay" class="modal-overlay hidden">
@@ -207,12 +198,12 @@ if (isset($_SESSION['user_id'])) {
             </div>
         </div>
 
-    <!-- Modal de edição de curso -->
+        <!-- Modal de edição de curso -->
         <div id="editCourseModalOverlay" class="modal-overlay hidden">
             <div class="modal">
                 <div class="modal-header">
                     <h3>Editar Curso</h3>
-                    <button class="close-modal-btn">X</button>
+                    <button id="close-modal-btn" class="close-modal-btn">X</button> 
                 </div>
                 <div class="modal-body">
                     <form id="editCourseForm" action="../models/edit_course.php" method="POST" enctype="multipart/form-data">
@@ -241,10 +232,25 @@ if (isset($_SESSION['user_id'])) {
         </div>
 
 
+            <!-- Modal da primeira exibição de cursos -->
+        <div class="first-modal-overlay" id="modalOverlay">
+            <div class="first-modal-content" id="firstVisitModal">
+                <h2>Bem-vindo a Paltaforma!</h2>
+                <p>Faça login para se inscrever em nossos cursos, abaixo o mais recente adicionado a paltaforma</p>
+                <h3><?php echo htmlspecialchars($lastCourse['title']); ?></h3>
+                <p><?php echo htmlspecialchars($lastCourse['description']); ?></p>
+                <?php if ($lastCourse['image']) : ?>
+                    <img src="<?php echo htmlspecialchars($lastCourse['image']); ?>" alt="Imagem do curso" style="max-width: 100%;">
+                <?php endif; ?>
+                <button id="closeModalBtn">Fechar</button>
+                <a href="../views/login.php" id="loginButton" class="btn btn-subscribe" onclick="setFirstVisitDoneAndRedirect()">Login</a>
+            </div>
+        </div>
+
     <?php include '../views/footer.php'; ?>
 
     <!-- Scripts -->
     <script src="../assets/js/modal.js"></script>
-    <script src="../assets/js/main.js"></script>
+    <script src="../assets/js/main.js"></script>    
 </body>
 </html>

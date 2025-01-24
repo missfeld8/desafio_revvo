@@ -18,6 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['name'] = $user['name'];
             $_SESSION['role'] = $user['role']; 
             $_SESSION['avatar'] = $user['avatar']; 
+
             header('Location: dashboard.php');
             exit;
         } else {

@@ -1,5 +1,5 @@
 <?php
-require '../includes/database.php';
+require 'database.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title = $_POST['title'];

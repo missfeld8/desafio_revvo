@@ -5,9 +5,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = $_POST['name'];
     $username = $_POST['username'];
     $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
-    $avatar = 'https://via.placeholder.com/150'; // Padrão para avatar
 
-    // Inserir o novo usuário no banco
+
+    $avatar = 'https://media.discordapp.net/attachments/1252674735662436453/1331455873545011200/image.png?ex=67945169&is=6792ffe9&hm=13074abcbb90b6f6e5e1f9aa742fac8a4c3d4bdac19fbfe6a37ea0f0aa11394f&=&format=webp&quality=lossless&width=609&height=608'; 
+
+    if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] == 0) {
+        $avatarFile = $_FILES['avatar'];
+
+        $uploadDir = '../uploads/avatars/';
+        $avatarFileName = time() . '_' . basename($avatarFile['name']);
+        $uploadPath = $uploadDir . $avatarFileName;
+
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        if (in_array($avatarFile['type'], $allowedTypes)) {
+            if (move_uploaded_file($avatarFile['tmp_name'], $uploadPath)) {
+                $avatar = $uploadPath; 
+            } else {
+                $error = 'Erro ao enviar a imagem!';
+            }
+        } else {
+            $error = 'Formato de imagem inválido!';
+        }
+    }
+
     $stmt = $pdo->prepare("INSERT INTO users (name, username, password, avatar) VALUES (?, ?, ?, ?)");
     $stmt->execute([$name, $username, $password, $avatar]);
 
@@ -27,10 +47,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <section class="login-container">
         <h1>Cadastro - Teste Revvo</h1>
-        <form action="register.php" method="POST" class="login-form">
+        <form action="register.php" method="POST" enctype="multipart/form-data" class="login-form">
             <input type="text" name="name" placeholder="Nome" required>
             <input type="text" name="username" placeholder="Usuário" required>
             <input type="password" name="password" placeholder="Senha" required>
+            <input type="file" name="avatar" accept="image/*">
+
             <button type="submit" class="btn">Cadastrar</button>
         </form>
     </section>

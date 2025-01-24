@@ -214,6 +214,10 @@ function addOverlayClickEvent(modalOverlay) {
 
 function addOpenModalEvent(button, modalOverlay) {
     button.addEventListener('click', () => {
+        const openModals = document.querySelectorAll('.modal-overlay:not(.hidden)');
+        openModals.forEach(modal => {
+            closeModal(modal);
+        });
         openModal(modalOverlay);
     });
 }
@@ -223,6 +227,15 @@ function addCloseModalEvent(button, modalOverlay) {
         closeModal(modalOverlay);
     });
 }
+
+
+document.getElementById('close-modal-btn').addEventListener('click', function() {
+    const editModalOverlay = document.getElementById('editCourseModalOverlay'); // Modal específico de edição
+    if (editModalOverlay) {
+        closeModal(editModalOverlay);
+        window.location.reload()
+    }
+});
 
 document.getElementById('editCourseForm').addEventListener('submit', function(event) {
     event.preventDefault();
@@ -236,7 +249,11 @@ document.getElementById('editCourseForm').addEventListener('submit', function(ev
     .then(data => {
         if (data.success) {
             alert(data.message || 'Curso atualizado com sucesso.');
-            window.location.href = 'dashboard.php'; // Redireciona para o dashboard
+            const editModal = document.getElementById('editCourseModalOverlay');
+            if (editModal) {
+                closeModal(editModal);
+            }
+            window.location.href = 'dashboard.php';
         } else {
             alert(data.message || 'Erro ao atualizar o curso.');
         }
@@ -247,63 +264,128 @@ document.getElementById('editCourseForm').addEventListener('submit', function(ev
     });
 });
 
-
-document.addEventListener('DOMContentLoaded', () => {
-    setupViewCourseModal();
-    setupAddCourseModal();
-    setupImagePreview();
-    setupSubscribeButton();
-});
-
-function setupSubscribeButton() {
-    const subscribeButton = document.getElementById('subscribeButton');
-    if (subscribeButton) {
-        subscribeButton.addEventListener('click', function () {
+function setupViewCourseModal() {
+    document.querySelectorAll('.btn-open-view-course').forEach(button => {
+        button.addEventListener('click', function () {
             const courseId = this.dataset.courseId;
-            subscribeToCourse(courseId);
+            const courseTitle = this.dataset.courseTitle;
+            const courseDescription = this.dataset.courseDescription;
+            const courseImage = this.dataset.courseImage;
+            const isAdmin = false; 
+
+            showCourseModal(courseId, courseTitle, courseDescription, courseImage, isAdmin);
         });
-    }
-}
+    });
 
-function subscribeToCourse(courseId) {
-    fetch(`../models/subscribe_course.php`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ course_id: courseId }),
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert('Inscrição realizada com sucesso.');
-            location.reload(); 
-        } else {
-            alert(data.message || 'Erro ao realizar a inscrição.');
+    document.querySelector('.close-modal-btn').addEventListener('click', closeModal);
+    document.querySelector('.modal-overlay').addEventListener('click', (event) => {
+        if (event.target.classList.contains('modal-overlay')) {
+            closeModal();
         }
-    })
-    .catch(error => console.error('Erro na inscrição:', error));
+    });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    setupViewCourseModal();
-    setupAddCourseModal();
-    setupImagePreview();
-    setupSubscribeButton();
-});
 
-function setupSubscribeButton() {
+function showCourseModal(courseId, title, description, image, isAdmin) {
+    const modalOverlay = document.getElementById('viewCourseModalOverlay');
+    const courseTitle = document.getElementById('courseTitle');
+    const courseDescription = document.getElementById('courseDescription');
+    const courseImage = document.getElementById('courseImage');
     const subscribeButton = document.getElementById('subscribeButton');
-    if (subscribeButton) {
-        subscribeButton.addEventListener('click', function () {
+    const deleteCourseButton = document.getElementById('deleteCourseButton');
+    const editCourseButton = document.getElementById('editCourseButton');
+
+    courseTitle.textContent = title;
+    courseDescription.textContent = description;
+    courseImage.src = image;
+
+    if (deleteCourseButton) {
+        const newDeleteButton = deleteCourseButton.cloneNode(true);
+        deleteCourseButton.parentNode.replaceChild(newDeleteButton, deleteCourseButton);
+
+        newDeleteButton.setAttribute('data-course-id', courseId);
+        if (isAdmin) {
+            newDeleteButton.classList.remove('hidden');
+        } else {
+            newDeleteButton.classList.add('hidden');
+        }
+
+        newDeleteButton.addEventListener('click', function () {
             const courseId = this.dataset.courseId;
-            const isSubscribed = this.dataset.subscribed === "true";
-            if (isSubscribed) {
-                unsubscribeFromCourse(courseId, subscribeButton);
-            } else {
-                subscribeToCourse(courseId, subscribeButton);
+
+            if (confirm('Tem certeza que deseja excluir este curso?')) {
+                fetch(`../models/delete_course.php`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ id: courseId }),
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Curso excluído com sucesso.');
+                            location.reload();
+                        } else {
+                            alert(data.message || 'Erro ao excluir o curso.');
+                        }
+                    })
+                    .catch(error => console.error('Erro na exclusão:', error));
             }
         });
+    }
+
+    if (editCourseButton) {
+        const newEditButton = editCourseButton.cloneNode(true);
+        editCourseButton.parentNode.replaceChild(newEditButton, editCourseButton);
+
+        newEditButton.setAttribute('data-course-id', courseId);
+
+        newEditButton.addEventListener('click', function () {
+            const courseId = this.dataset.courseId;
+            fetchCourseData(courseId, populateEditForm);
+            openModal(document.getElementById('editCourseModalOverlay'));
+        });
+    }
+
+    if (subscribeButton) {
+        const newSubscribeButton = subscribeButton.cloneNode(true);
+        subscribeButton.parentNode.replaceChild(newSubscribeButton, subscribeButton);
+
+        newSubscribeButton.setAttribute('data-course-id', courseId);
+        newSubscribeButton.setAttribute('data-subscribed', "false");
+
+        fetch(`../models/check_subscription.php?course_id=${courseId}`)
+            .then(response => response.json())
+            .then(subscriptionData => {
+                if (subscriptionData.isSubscribed) {
+                    newSubscribeButton.textContent = "Desinscrever-se";
+                    newSubscribeButton.setAttribute('data-subscribed', "true");
+                    
+                } else {
+                    newSubscribeButton.textContent = "Inscrever-se";
+                    newSubscribeButton.setAttribute('data-subscribed', "false");
+                   
+                }
+            });
+
+        newSubscribeButton.addEventListener('click', handleSubscribeClick);
+    }
+
+    modalOverlay.classList.remove('hidden');
+}
+
+function closeModal() {
+    document.getElementById('viewCourseModalOverlay').classList.add('hidden');
+}
+
+function handleSubscribeClick() {
+    const courseId = this.dataset.courseId;
+    const isSubscribed = this.dataset.subscribed === "true";
+    if (isSubscribed) {
+        unsubscribeFromCourse(courseId, this);
+    } else {
+        subscribeToCourse(courseId, this);
     }
 }
 
@@ -319,9 +401,9 @@ function subscribeToCourse(courseId, button) {
     .then(data => {
         if (data.success) {
             alert('Inscrição realizada com sucesso.');
+            window.location.reload();
             button.textContent = "Desinscrever-se";
-            button.dataset.subscribed = "true";
-            location.reload(); 
+            button.setAttribute('data-subscribed', "true");
         } else {
             alert(data.message || 'Erro ao realizar a inscrição.');
         }
@@ -341,12 +423,33 @@ function unsubscribeFromCourse(courseId, button) {
     .then(data => {
         if (data.success) {
             alert('Inscrição removida com sucesso.');
+            window.location.reload();
             button.textContent = "Inscrever-se";
-            button.dataset.subscribed = "false";
-            location.reload(); 
+            button.setAttribute('data-subscribed', "false");
         } else {
             alert(data.message || 'Erro ao remover a inscrição.');
         }
     })
     .catch(error => console.error('Erro ao remover a inscrição:', error));
 }
+
+document.addEventListener('DOMContentLoaded', function () {
+    if (!localStorage.getItem('firstVisitDone')) {
+        const modalOverlay = document.getElementById('modalOverlay');
+        const modal = document.getElementById('firstVisitModal');
+        modalOverlay.classList.add('active'); 
+
+        document.getElementById('closeModalBtn').addEventListener('click', function () {
+            modalOverlay.classList.remove('active'); 
+            localStorage.setItem('firstVisitDone', 'true'); 
+        });
+    }
+});
+
+function setFirstVisitDoneAndRedirect() {
+
+    localStorage.setItem('firstVisitDone', 'true');
+
+}
+
+
