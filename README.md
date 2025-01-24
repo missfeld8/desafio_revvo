@@ -52,7 +52,7 @@ Este repositório contém o código do projeto **Desafio Revvo**. O objetivo des
     - Abra o **phpMyAdmin** no seu navegador acessando `http://localhost/phpmyadmin/`.
     - Crie um banco de dados chamado `teste_revvo` (ou altere o nome no arquivo de configuração).
     - Execute o arquivo SQL de inicialização para criar as tabelas necessárias.
-    - OBSERVAÇÃO - CRIAR PELO MENOS O USUÁRIO ADMIN COM O PRIVILÉGIO DE ADMIN COMO ESTA DESCRITO PARA PODER CRIAR CURSOS EDITAR E DELETAR.
+    - OBSERVAÇÃO - CRIAR PELO MENOS O USUÁRIO ADMIN E SENHA 1234 COM O PRIVILÉGIO DE ADMIN COMO ESTA DESCRITO PARA PODER CRIAR CURSOS EDITAR E DELETAR.
 
 
 
