@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'image' => $imagePath, 
             ]);
 
-            header('Location: dashboard.php');
+            header('Location: ../views/dashboard.php');
             exit;
         } else {
             echo "Erro ao mover a imagem para o diretório de uploads.";
